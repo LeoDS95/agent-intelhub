@@ -1,0 +1,106 @@
+# =============================================================================
+# Agent-IntelHub Configuration
+# =============================================================================
+
+# --- LLM Provider (硅基流动) ---
+llm:
+  provider: "deepseek"
+  model: "deepseek-ai/DeepSeek-V4-Flash"
+  api_key: "${DEEPSEEK_API_KEY}"
+  api_base: "${LLM_API_BASE:-https://api.deepseek.com/v1}"
+  max_tokens: 1024
+  temperature: 0.3
+
+# --- Push Notification ---
+push:
+  telegram:
+    enabled: true
+    bot_token: "${TELEGRAM_BOT_TOKEN}"
+    chat_id: "${TELEGRAM_CHAT_ID}"
+
+# --- Proxy ---
+proxy:
+  http: "${HTTP_PROXY:-}"
+  https: "${HTTPS_PROXY:-}"
+  enabled: true
+
+# --- News Sources ---
+sources:
+  
+  # 🔴 小米专区
+  xiaomi:
+    name: "小米动态"
+    enabled: true
+    items_per_run: 5
+    feeds:
+      - name: "HN 小米搜索"
+        url: "xiaomi"
+        type: hn_search
+      - name: "Hacker News RSS"
+        url: "https://hnrss.org/frontpage?count=20"
+        type: rss
+
+  # 🤖 AI & 技术前沿
+  ai_tech:
+    name: "AI 技术前沿"
+    enabled: true
+    items_per_run: 8
+    feeds:
+      - name: "Hacker News Frontpage"
+        url: "https://hnrss.org/frontpage?count=15"
+        type: rss
+      - name: "HN AI 搜索"
+        url: "artificial intelligence"
+        type: hn_search
+      - name: "HN LLM 搜索"
+        url: "LLM"
+        type: hn_search
+
+  # 📦 开源与开发者
+  dev_open_source:
+    name: "开源 & 开发者"
+    enabled: true
+    items_per_run: 5
+    feeds:
+      - name: "HN 开源搜索"
+        url: "github open source release"
+        type: hn_search
+      - name: "HN 编程语言"
+        url: "programming language release"
+        type: hn_search
+
+  # 🌐 行业动态
+  industry:
+    name: "行业要闻"
+    enabled: true
+    items_per_run: 5
+    feeds:
+      - name: "HN 业界"
+        url: "tech industry startup funding"
+        type: hn_search
+      - name: "HN Show HN"
+        url: "Show HN"
+        type: hn_search
+
+# --- LLM Prompt Template ---
+prompts:
+  summarization: |
+    你是一个专业的情报分析助手。请对以下{n}条新闻进行智能摘要。
+
+    要求：
+    1. 按格式输出每条新闻的摘要（每条不超过100字）：
+       「标题」→ 一句话摘要
+
+    2. 在最后输出一个"今日关键洞察"（50字以内），提炼最重要的趋势
+
+    3. 如果涉及小米公司相关的新闻，在标题后标注 [Xiaomi]
+
+    语言：简体中文
+
+    新闻内容：
+    {content}
+
+# --- Runtime ---
+runtime:
+  max_summary_batch: 15
+  verbose_screenshots: true
