@@ -24,9 +24,10 @@ logger = logging.getLogger(__name__)
 class TerminalFormatter:
     """Beautiful terminal output for screenshots and runtime logs."""
 
-    def __init__(self, verbose: bool = True):
-        self.console = Console(color_system="truecolor", width=100)
+    def __init__(self, verbose: bool = True, record: bool = False):
+        self.console = Console(color_system="truecolor", width=100, record=record)
         self.verbose = verbose
+        self.record = record
         self._log_buffer: List[str] = []
 
     def print_banner(self):

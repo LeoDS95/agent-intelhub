@@ -78,11 +78,13 @@ def load_config(config_path: str = "config.yaml") -> dict:
 class IntelHubAgent:
     """Main orchestrator for the intelligence aggregation pipeline."""
 
-    def __init__(self, config_path: str = "config.yaml", dry_run: bool = False):
+    def __init__(self, config_path: str = "config.yaml", dry_run: bool = False, output_html: str = ""):
         self.config = load_config(config_path)
         self.dry_run = dry_run
+        self.output_html = output_html
         self.formatter = TerminalFormatter(
-            verbose=self.config.get("runtime", {}).get("verbose_screenshots", True)
+            verbose=self.config.get("runtime", {}).get("verbose_screenshots", True),
+            record=bool(output_html),
         )
 
         # Initialize modules
@@ -162,6 +164,13 @@ class IntelHubAgent:
         self.formatter.print_workflow_end(elapsed, total_tokens, total_items)
         logger.info(f"✅ Workflow complete in {elapsed:.1f}s ({total_tokens:,} tokens)")
 
+        # Export HTML if requested
+        if self.output_html:
+            html = self.formatter.console.export_html()
+            with open(self.output_html, "w", encoding="utf-8") as f:
+                f.write(html)
+            logger.info(f"  \U0001f4f7 HTML saved to {self.output_html}")
+
         # Return metrics for cron scheduling
         return {
             "status": "success",
@@ -200,6 +209,11 @@ Examples:
         action="version",
         version="Agent-IntelHub v1.0.0",
     )
+    parser.add_argument(
+        "--output",
+        default="",
+        help="Export terminal output to HTML file (for screenshots)",
+    )
 
     args = parser.parse_args()
 
@@ -207,7 +221,11 @@ Examples:
     load_dotenv()
 
     # Run
-    agent = IntelHubAgent(config_path=args.config, dry_run=args.dry_run)
+    agent = IntelHubAgent(
+        config_path=args.config,
+        dry_run=args.dry_run,
+        output_html=args.output,
+    )
     result = agent.run()
     
     return result

@@ -135,7 +135,7 @@ Developers and tech enthusiasts face a paradox: the more information channels we
 
 ```bash
 # 1. Clone
-git clone https://github.com/your-username/agent-intelhub.git
+git clone https://github.com/LeoDS95/agent-intelhub.git
 cd agent-intelhub
 
 # 2. Create virtual environment
